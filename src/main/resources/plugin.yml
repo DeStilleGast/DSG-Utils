@@ -1,0 +1,12 @@
+name: DSGUtils
+version: ${project.version}
+main: xyz.destillegast.dsgutils.DSGUtils
+api-version: 1.15
+prefix: DSG Util
+authors: [ DeStilleGast ]
+description: Small plugin to remove some boiler code
+
+
+commands:
+  dsg-test-gui:
+    permission: "dsg.util.test.gui.command"
