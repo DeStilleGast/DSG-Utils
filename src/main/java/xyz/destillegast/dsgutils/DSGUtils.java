@@ -16,7 +16,7 @@ public final class DSGUtils extends JavaPlugin {
 
         getCommand("dsg-test-gui").setExecutor(new TestGuiCommand());
 
-//        BaseAnimation ba = new ScrollAnimation("Text", ChatColor.AQUA, ChatColor.BLUE);
+//        BaseAnimation ba = new ScrollTextAnimation("Text", ChatColor.AQUA.asBungee().getColor());
 //        getServer().getScheduler().runTaskTimer(this, () -> {
 //            getServer().getConsoleSender().spigot().sendMessage(ba.getText());
 //            for (Player onlinePlayer : getServer().getOnlinePlayers()) {

@@ -121,7 +121,7 @@ public class ItemBuilder {
     public ItemBuilder withGlint(boolean glint) {
         if (glint) {
             withFlags(ItemFlag.HIDE_ENCHANTS);
-            withEnchantment(Enchantment.VANISHING_CURSE, 0);
+            return withEnchantment(Enchantment.VANISHING_CURSE, 0);
         } else {
             itemMeta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
             itemMeta.removeEnchant(Enchantment.VANISHING_CURSE);

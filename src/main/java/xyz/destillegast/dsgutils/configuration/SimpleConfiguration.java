@@ -30,6 +30,11 @@ public class SimpleConfiguration {
         this.obj = obj;
     }
 
+    public static <T> T load(T obj, Plugin owner, String filename) throws IllegalAccessException {
+        new SimpleConfiguration(owner, filename, obj).load();
+        return obj;
+    }
+
     public void load() throws IllegalAccessException {
         if(!configFile.exists()) save();
 
@@ -65,5 +70,4 @@ public class SimpleConfiguration {
             e.printStackTrace();
         }
     }
-
 }
