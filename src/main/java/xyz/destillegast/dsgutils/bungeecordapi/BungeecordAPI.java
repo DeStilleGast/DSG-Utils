@@ -15,7 +15,7 @@ import java.util.function.Function;
 /**
  * Created by DeStilleGast 23-5-2021
  */
-public class BungeecordAPI implements PluginMessageListener {
+public class BungeecordAPI {
 
     private final Plugin plugin;
     private final String BungeeChannel = "BungeeCord";
@@ -24,43 +24,25 @@ public class BungeecordAPI implements PluginMessageListener {
         this.plugin = plugin;
 
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, BungeeChannel);
-        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, BungeeChannel, this);
     }
 
-    @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals(BungeeChannel)) return;
-    }
-
+    /**
+     * Send player to a named server
+     * @param player Player to send
+     * @param server Server to send too
+     * @return true if request was successful
+     */
     public boolean sendPlayerToServer(Player player, String server){
         return sendData(player, "Connect", server);
     }
 
+    /**
+     * Get real IP from player
+     * @param player
+     * @param onResult Callback with IP from player
+     * @return true if request was successful
+     */
     public boolean getRealIp(Player player, Consumer<Tuple<String, Integer>> onResult){
-//        PluginMessageListener listener = new PluginMessageListener() {
-//            @Override
-//            public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-//                if (!channel.equals(BungeeChannel)) return;
-//
-//                ByteArrayInputStream stream = new ByteArrayInputStream(message);
-//                DataInputStream in = new DataInputStream(stream);
-//
-//
-//                try {
-//                    if(!in.readUTF().equals("IP")) return; // check subchannel
-//
-//                    String ip = in.readUTF();
-//                    int port = in.readInt();
-//
-//                    onResult.accept(new Tuple<>(ip, port));
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                player.getServer().getMessenger().unregisterIncomingPluginChannel(plugin, BungeeChannel, this);
-//            }
-//        };
-
         player.getServer().getMessenger().registerIncomingPluginChannel(plugin, BungeeChannel, createListener("IP", in -> {
             try {
                 String ip = in.readUTF();
@@ -78,7 +60,13 @@ public class BungeecordAPI implements PluginMessageListener {
         return sendData(player, "IP");
     }
 
-    public boolean getPlayerCount(String server, Consumer<Integer> playerCount){
+    /**
+     * Get player count from given server name
+     * @param server Servername
+     * @param playerCountConsumer player count on given server
+     * @return true if request was successful
+     */
+    public boolean getPlayerCount(String server, Consumer<Integer> playerCountConsumer){
         Player player = getRandomPlayer();
         if(player != null) {
 
@@ -87,7 +75,7 @@ public class BungeecordAPI implements PluginMessageListener {
                     if(!in.readUTF().equals(server)) return false;
 
                     int playerCountOnServer = in.readInt();
-                    playerCount.accept(playerCountOnServer);
+                    playerCountConsumer.accept(playerCountOnServer);
                     return true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -102,6 +90,12 @@ public class BungeecordAPI implements PluginMessageListener {
         return false;
     }
 
+    /**
+     * Get list of players from given server
+     * @param server Servername
+     * @param playerListConsumer Playernames from given server
+     * @return true if request was successful
+     */
     public boolean getPlayerList(String server, Consumer<List<String>> playerListConsumer){
         Player player = getRandomPlayer();
         if(player != null) {
@@ -126,6 +120,11 @@ public class BungeecordAPI implements PluginMessageListener {
         return false;
     }
 
+    /**
+     * Get List of servernames
+     * @param serverListConsumer List of servernames
+     * @return true if request was successful
+     */
     public boolean getServerList(Consumer<List<String>> serverListConsumer){
         Player player = getRandomPlayer();
         if(player != null) {
@@ -148,6 +147,11 @@ public class BungeecordAPI implements PluginMessageListener {
         return false;
     }
 
+    /**
+     * Get the current server name given from Bungeecord
+     * @param serverNameConsumer current servername
+     * @return true if request was successful
+     */
     public boolean getCurrentServerName(Consumer<String> serverNameConsumer){
         Player player = getRandomPlayer();
         if(player != null) {
@@ -163,6 +167,46 @@ public class BungeecordAPI implements PluginMessageListener {
             }));
 
             sendData(player, "GetServer");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get UUID from player
+     * @param player
+     * @param uuidConsumer
+     * @return true if request was successful
+     */
+    public boolean getPlayerUUID(Player player, Consumer<String> uuidConsumer){
+        if(player != null) {
+            player.getServer().getMessenger().registerIncomingPluginChannel(plugin, BungeeChannel, createListener("UUID", in -> {
+                try {
+                    uuidConsumer.accept(in.readUTF());
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }));
+
+            sendData(player, "UUID");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Kick player from the entire network
+     * @param player player to kick
+     * @param message kick message
+     * @return true if request was successful
+     */
+    public boolean kickPlayer(Player player, String message){
+        if(player != null) {
+            sendData(player, "KickPlayer", player.getName(), message);
             return true;
         }
 

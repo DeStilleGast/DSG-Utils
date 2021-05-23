@@ -7,22 +7,20 @@ import org.bukkit.entity.Player;
 import xyz.destillegast.dsgutils.DSGUtils;
 import xyz.destillegast.dsgutils.bungeecordapi.BungeecordAPI;
 
-import java.util.stream.Collectors;
-
 /**
  * Created by DeStilleGast 23-5-2021
  */
-public class BungeeAPICommand implements CommandExecutor {
+public class TestBungeeAPICommand implements CommandExecutor {
 
     private final BungeecordAPI bungeecordAPI;
 
-    public BungeeAPICommand(DSGUtils main) {
+    public TestBungeeAPICommand(DSGUtils main) {
         this.bungeecordAPI = new BungeecordAPI(main);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender instanceof Player){
+        if (sender instanceof Player) {
             bungeecordAPI.getRealIp((Player) sender, stringIntegerTuple -> {
                 sender.sendMessage("IP: " + stringIntegerTuple.getPartA() + ":" + stringIntegerTuple.getPartB());
             });

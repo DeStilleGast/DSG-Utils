@@ -3,7 +3,7 @@ package xyz.destillegast.dsgutils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import xyz.destillegast.dsgutils.commands.BungeeAPICommand;
+import xyz.destillegast.dsgutils.commands.TestBungeeAPICommand;
 import xyz.destillegast.dsgutils.commands.TestGuiCommand;
 import xyz.destillegast.dsgutils.listener.InventoryMenuListener;
 
@@ -16,7 +16,7 @@ public final class DSGUtils extends JavaPlugin {
         pm.registerEvents(new InventoryMenuListener(), this);
 
         getCommand("dsg-test-gui").setExecutor(new TestGuiCommand());
-        getCommand("dsg-test-bungee").setExecutor(new BungeeAPICommand(this));
+        getCommand("dsg-test-bungee").setExecutor(new TestBungeeAPICommand(this));
 
 //        BaseAnimation ba = new ScrollTextAnimation("Text", ChatColor.AQUA.asBungee().getColor());
 //        getServer().getScheduler().runTaskTimer(this, () -> {
