@@ -10,3 +10,5 @@ description: Small plugin to remove some boiler code
 commands:
   dsg-test-gui:
     permission: "dsg.util.test.gui.command"
+  dsg-test-bungee:
+    permission: "dsg.util.test.bungeeapi.command"
