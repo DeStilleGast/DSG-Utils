@@ -39,6 +39,7 @@ public class HttpClient {
             StringBuilder response = new StringBuilder();
             while ((readBuffer = inputReader.readLine()) != null) {
                 response.append(readBuffer);
+                response.append('\n');
             }
             inputReader.close();
 
@@ -74,6 +75,7 @@ public class HttpClient {
 
             while ((readBuffer = inputReader.readLine()) != null) {
                 response.append(readBuffer);
+                response.append('\n');
             }
             inputReader.close();
 
