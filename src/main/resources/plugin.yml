@@ -8,6 +8,8 @@ description: Small plugin to remove some boiler code
 
 
 commands:
+  dsg-random-test-command:
+    permission: "dsg.util.test.random.command"
   dsg-test-gui:
     permission: "dsg.util.test.gui.command"
   dsg-test-bungee:

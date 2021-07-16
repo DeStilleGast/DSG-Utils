@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 
 import java.awt.*;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Original: https://github.com/Iridium-Development/IridiumColorAPI/blob/master/src/main/java/com/iridium/iridiumcolorapi/IridiumColorAPI.java
@@ -145,5 +147,19 @@ public class ColorHelper {
             }
         }
         return COLORS.get(nearestColor);
+    }
+
+    public static String translate(String message) {
+
+        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+
+        while (matcher.find()) {
+            String color = message.substring(matcher.start(), matcher.end());
+            message = message.replace(color, ChatColor.of(color) + "");
+            matcher = pattern.matcher(message);
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 }
