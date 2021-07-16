@@ -123,7 +123,7 @@ public class SignManager implements Listener, Runnable {
             if(signLocation.getChunk().isLoaded()){
                 String key = signLocations.get(signLocation);
                 if(key.equals(title)){
-                    actionHandlers.get(key).onSignUpdate(signLocation.getBlock());
+                    Bukkit.getOnlinePlayers().forEach(p -> actionHandlers.get(key).onSignUpdate(p, signLocation.getBlock()));
                 }
             }
         }
@@ -151,8 +151,15 @@ public class SignManager implements Listener, Runnable {
     }
     public static void sendSignUpdate(Location location, String[] lines){
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendSignChange(location, lines);
+            sendSignUpdate(player, location, lines);
         }
+    }
+
+    public static void sendSignUpdate(Player player, Block block, String[] lines){
+        player.sendSignChange(block.getLocation(), lines);
+    }
+    public static void sendSignUpdate(Player player, Location location, String[] lines){
+        player.sendSignChange(location, lines);
     }
 
     @Override
@@ -175,7 +182,7 @@ public class SignManager implements Listener, Runnable {
             if(signLocation.distance(player.getLocation()) < 64){
                 String key = signLocations.get(signLocation);
 
-                actionHandlers.get(key).onSignUpdate(signLocation.getBlock());
+                actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
             }
         }
     }

@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public interface SignActions {
 
     public boolean onSignPlace(Player player, Block block);
-    public void onSignUpdate(Block block);
+    public void onSignUpdate(Player player, Block block);
     public boolean onSignRemove(Player player, Block block);
     public void onSignInteract(Player player, Block block);
 }
