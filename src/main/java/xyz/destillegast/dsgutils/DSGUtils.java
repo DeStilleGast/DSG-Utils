@@ -44,6 +44,10 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
 //        }, 0, 20);
 
         getLogger().info("Loaded");
+
+
+        ConfigurationSerialization.registerClass(Tuple.class);
+        new TestSign(this);
     }
 
     @Override
