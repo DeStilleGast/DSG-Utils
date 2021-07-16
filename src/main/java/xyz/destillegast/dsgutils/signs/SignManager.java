@@ -78,7 +78,7 @@ public class SignManager implements Listener, Runnable {
         if(block.getState() instanceof Sign) {
             String firstLine = event.getLine(0);
             if(actionHandlers.containsKey(firstLine)) {
-                boolean allowSign = actionHandlers.get(firstLine).onSignPlace(event.getPlayer(), event.getBlock());
+                boolean allowSign = actionHandlers.get(firstLine).onSignPlace(event.getPlayer(), event.getBlock(), event.getLines());
 
                 if (allowSign) {
                     signLocations.put(block.getLocation(), firstLine);

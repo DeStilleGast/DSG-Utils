@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
  */
 public interface SignActions {
 
-    public boolean onSignPlace(Player player, Block block);
+    public boolean onSignPlace(Player player, Block block, String[] lines);
     public void onSignUpdate(Player player, Block block);
     public boolean onSignRemove(Player player, Block block);
     public void onSignInteract(Player player, Block block);

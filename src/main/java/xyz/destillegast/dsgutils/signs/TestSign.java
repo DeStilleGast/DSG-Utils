@@ -23,7 +23,7 @@ public class TestSign implements SignActions{
 
 
     @Override
-    public boolean onSignPlace(Player player, Block block) {
+    public boolean onSignPlace(Player player, Block block, String[] lines) {
         Bukkit.getScheduler().runTask(utils, () -> {
             SignManager.setLine(block, 3, "&4Hello #123456world");
         });
