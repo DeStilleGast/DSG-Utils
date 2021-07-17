@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.ServicePriority;
 import xyz.destillegast.dsgutils.DSGUtils;
-import xyz.destillegast.dsgutils.helpers.ColorHelper;
+import xyz.destillegast.dsgutils.api.SignManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +27,14 @@ import java.util.Map;
 /**
  * Created by DeStilleGast 15-7-2021
  */
-public class SignManager implements Listener, Runnable {
+public class SignManagerImpl implements Listener, Runnable, SignManager {
 
     private final Map<String, SignActions> actionHandlers = new HashMap<>();
     private final Map<Location, String> signLocations = new LinkedHashMap<>();
     private final DSGUtils main;
     private final File configFile;
 
-    public SignManager(DSGUtils main) {
+    public SignManagerImpl(DSGUtils main) {
         this.main = main;
         Bukkit.getServicesManager().register(SignManager.class, this, main, ServicePriority.Normal);
 
@@ -60,10 +60,13 @@ public class SignManager implements Listener, Runnable {
         }
     }
 
+    @Override
     public void registerHandler(String title, SignActions signActions){
         actionHandlers.put(getAsHeader(title), signActions);
+        main.logInfo(String.format("%s has been registered by %s", title, signActions.getClass()));
     }
 
+    @Override
     public void unregisterHandler(String title){
         actionHandlers.remove(getAsHeader(title));
     }
@@ -96,8 +99,11 @@ public class SignManager implements Listener, Runnable {
         if(block.getState() instanceof Sign){
             String firstLine = ((Sign) block.getState()).getLine(0);
             if(actionHandlers.containsKey(ChatColor.stripColor(firstLine))) {
-                actionHandlers.get(firstLine).onSignRemove(event.getPlayer(), block);
-                signLocations.remove(event.getBlock().getLocation());
+                boolean shouldCancel = actionHandlers.get(firstLine).onSignRemove(event.getPlayer(), block);
+                if(!shouldCancel) {
+                    signLocations.remove(event.getBlock().getLocation());
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -109,7 +115,7 @@ public class SignManager implements Listener, Runnable {
             if(block.getState() instanceof Sign){
                 String firstLine = ((Sign) block.getState()).getLine(0);
                 if(actionHandlers.containsKey(ChatColor.stripColor(firstLine))) {
-                    actionHandlers.get(firstLine).onSignInteract(event.getPlayer(), block);
+                    actionHandlers.get(firstLine).onSignInteract(event.getPlayer(), block, event.getAction());
                 }
             }
         }
@@ -130,38 +136,6 @@ public class SignManager implements Listener, Runnable {
         }
     }
 
-    public static boolean setLine(Block block, int index, String line){
-        if(block.getState() instanceof Sign){
-            Sign sign = (Sign) block.getState();
-            sign.setLine(index, ColorHelper.translate(line));
-            sign.update(true);
-            return true;
-        }
-        return false;
-    }
-
-    public static String getLine(Block block, int index){
-        if(block.getState() instanceof Sign){
-            return ((Sign) block.getState()).getLine(index);
-        }
-        return null;
-    }
-
-    public static void sendSignUpdate(Block block, String[] lines){
-        sendSignUpdate(block.getLocation(), lines);
-    }
-    public static void sendSignUpdate(Location location, String[] lines){
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            sendSignUpdate(player, location, lines);
-        }
-    }
-
-    public static void sendSignUpdate(Player player, Block block, String[] lines){
-        player.sendSignChange(block.getLocation(), lines);
-    }
-    public static void sendSignUpdate(Player player, Location location, String[] lines){
-        player.sendSignChange(location, lines);
-    }
 
     @Override
     public void run() {
@@ -181,10 +155,12 @@ public class SignManager implements Listener, Runnable {
     public void updateSignsNearLocationForPlayer(final Player player){
         Bukkit.getScheduler().runTask(main, () -> {
             for (Location signLocation : signLocations.keySet()) {
-                if(signLocation.distance(player.getLocation()) < 64){
-                    String key = signLocations.get(signLocation);
+                if(signLocation.getWorld() == player.getWorld()) {
+                    if (signLocation.distance(player.getLocation()) < 64) {
+                        String key = signLocations.get(signLocation);
 
-                    actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
+                        actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
+                    }
                 }
             }
         });

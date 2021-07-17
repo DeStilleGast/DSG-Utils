@@ -1,28 +1,23 @@
 package xyz.destillegast.dsgutils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.destillegast.dsgutils.commands.TestBungeeAPICommand;
 import xyz.destillegast.dsgutils.commands.TestGuiCommand;
 import xyz.destillegast.dsgutils.helpers.Tuple;
 import xyz.destillegast.dsgutils.listener.InventoryMenuListener;
-import xyz.destillegast.dsgutils.signs.SignManager;
+import xyz.destillegast.dsgutils.api.SignManager;
+import xyz.destillegast.dsgutils.signs.SignManagerImpl;
 import xyz.destillegast.dsgutils.signs.TestSign;
 
 import java.util.logging.Level;
 
 public final class DSGUtils extends JavaPlugin implements CommandExecutor {
 
-    private SignManager signManager;
+    private SignManagerImpl signManager;
 
     @Override
     public void onEnable() {
@@ -31,7 +26,7 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
         final PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new InventoryMenuListener(), this);
 
-        signManager = new SignManager(this);
+        signManager = new SignManagerImpl(this);
 
         getCommand("dsg-random-test-command").setExecutor(this);
         getCommand("dsg-test-gui").setExecutor(new TestGuiCommand());
@@ -90,5 +85,9 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
 
     public void logError(String s) {
         getLogger().log(Level.FINE, s);
+    }
+
+    public void logInfo(String s) {
+        getLogger().info(s);
     }
 }

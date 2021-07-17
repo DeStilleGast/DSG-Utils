@@ -4,7 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import xyz.destillegast.dsgutils.DSGUtils;
+import xyz.destillegast.dsgutils.helpers.SignHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +27,7 @@ public class TestSign implements SignActions{
     @Override
     public boolean onSignPlace(Player player, Block block, String[] lines) {
         Bukkit.getScheduler().runTask(utils, () -> {
-            SignManager.setLine(block, 3, "&4Hello #123456world");
+            SignHelper.setLine(block, 3, "&4Hello #123456world");
         });
 
         return true;
@@ -34,7 +36,7 @@ public class TestSign implements SignActions{
     @Override
     public void onSignUpdate(Player player, Block block) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("H:mm");
-        SignManager.sendSignUpdate(block.getLocation(), new String[] { "[Time]", df.format(LocalDateTime.now().toLocalTime()), "", ""});
+        SignHelper.sendSignUpdate(block.getLocation(), new String[] { "[Time]", df.format(LocalDateTime.now().toLocalTime()), "", ""});
     }
 
     @Override
@@ -43,7 +45,7 @@ public class TestSign implements SignActions{
     }
 
     @Override
-    public void onSignInteract(Player player, Block block) {
+    public void onSignInteract(Player player, Block block, Action action) {
         player.sendBlockChange(block.getLocation().subtract(0, 1, 0), Material.NETHERITE_BLOCK.createBlockData());
     }
 }
