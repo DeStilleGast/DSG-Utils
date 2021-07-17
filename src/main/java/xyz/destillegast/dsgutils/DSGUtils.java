@@ -26,6 +26,8 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
+        if(!getDataFolder().exists()) getDataFolder().mkdir();
+
         final PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new InventoryMenuListener(), this);
 

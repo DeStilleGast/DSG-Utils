@@ -41,7 +41,7 @@ public class SignManager implements Listener, Runnable {
         Bukkit.getPluginManager().registerEvents(this, main);
         Bukkit.getScheduler().runTaskTimer(main, this, 20 * 30, 20 * 30);
 
-        configFile = new File(main.getDataFolder(), "signManager.yml");
+        configFile = new File(main.getDataFolder(), "SignManager.yml");
         if(!configFile.exists()) {
             try {
                 configFile.createNewFile();
@@ -83,6 +83,7 @@ public class SignManager implements Listener, Runnable {
                 if (allowSign) {
                     signLocations.put(block.getLocation(), firstLine);
                 } else {
+                    event.getBlock().breakNaturally();
                     event.setCancelled(true);
                 }
             }
@@ -177,14 +178,16 @@ public class SignManager implements Listener, Runnable {
         updateSignsNearLocationForPlayer(event.getPlayer());
     }
 
-    public void updateSignsNearLocationForPlayer(Player player){
-        for (Location signLocation : signLocations.keySet()) {
-            if(signLocation.distance(player.getLocation()) < 64){
-                String key = signLocations.get(signLocation);
+    public void updateSignsNearLocationForPlayer(final Player player){
+        Bukkit.getScheduler().runTask(main, () -> {
+            for (Location signLocation : signLocations.keySet()) {
+                if(signLocation.distance(player.getLocation()) < 64){
+                    String key = signLocations.get(signLocation);
 
-                actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
+                    actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
+                }
             }
-        }
+        });
     }
 
     public void disable() {
