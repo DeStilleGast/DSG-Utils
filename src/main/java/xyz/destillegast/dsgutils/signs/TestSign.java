@@ -36,7 +36,11 @@ public class TestSign implements SignActions{
     @Override
     public void onSignUpdate(Player player, Block block) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern("H:mm");
-        SignHelper.sendSignUpdate(block.getLocation(), new String[] { "[Time]", df.format(LocalDateTime.now().toLocalTime()), "", ""});
+        SignHelper.sendSignUpdate(block.getLocation(),
+                new String[] { "[Time]",
+                        df.format(LocalDateTime.now().toLocalTime()),
+                        "",
+                        ""});
     }
 
     @Override

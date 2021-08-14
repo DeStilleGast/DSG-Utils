@@ -86,7 +86,7 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
 
                 if (allowSign) {
                     signLocations.put(block.getLocation(), firstLine);
-                    signAction.onSignUpdate(event.getPlayer(), event.getBlock());
+                    Bukkit.getScheduler().runTaskLater(main, () -> signAction.onSignUpdate(event.getPlayer(), event.getBlock()), 5);
                 } else {
                     event.getBlock().breakNaturally();
                     event.setCancelled(true);
@@ -101,9 +101,10 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
         if (block.getState() instanceof Sign) {
             String firstLine = ((Sign) block.getState()).getLine(0);
             if (actionHandlers.containsKey(ChatColor.stripColor(firstLine))) {
-                boolean shouldCancel = actionHandlers.get(firstLine).onSignRemove(event.getPlayer(), block);
-                if (!shouldCancel) {
+                boolean allowBreak = actionHandlers.get(firstLine).onSignRemove(event.getPlayer(), block);
+                if (allowBreak) {
                     signLocations.remove(event.getBlock().getLocation());
+                }else{
                     event.setCancelled(true);
                 }
             }

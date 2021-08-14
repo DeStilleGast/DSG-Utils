@@ -1,5 +1,7 @@
 package xyz.destillegast.dsgutils.helpers;
 
+import org.bukkit.Bukkit;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -24,6 +26,7 @@ public class HttpClient {
     }
 
     public String get(URL url) throws IOException {
+        if(Bukkit.isPrimaryThread()) throw new IOException("Networking on main thread");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("GET");
@@ -54,6 +57,7 @@ public class HttpClient {
     }
 
     public String post(URL url, Map<String, Object> postData) throws IOException {
+        if(Bukkit.isPrimaryThread()) throw new IOException("Networking on main thread");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("POST");
