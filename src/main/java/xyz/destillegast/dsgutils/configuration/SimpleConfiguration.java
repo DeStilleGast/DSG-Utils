@@ -1,12 +1,15 @@
 package xyz.destillegast.dsgutils.configuration;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by DeStilleGast 22-2-2021
@@ -46,8 +49,24 @@ public class SimpleConfiguration {
 
                 String configPath = field.getAnnotation(ConfigOption.class).value();
 
-                if(config.contains(configPath))
-                    field.set(obj, config.get(configPath));
+                if(config.contains(configPath)) {
+                    Object configValue = config.get(configPath);
+
+                    if(configValue instanceof MemorySection){
+                        if(field.getType().isAssignableFrom(Map.class)){
+                            Set<String> keys = ((MemorySection) configValue).getKeys(false);
+                            Map<String, Object> map = new HashMap<>();
+
+                            for (String key : keys) {
+                                map.put(key, ((MemorySection) configValue).get(key));
+                            }
+
+                            field.set(obj, map);
+                        }
+                    }else {
+                        field.set(obj, configValue);
+                    }
+                }
             }
         }
     }
