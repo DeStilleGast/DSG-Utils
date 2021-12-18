@@ -43,6 +43,12 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder withLore(String lore) {
+        withLore(lore.split("\n"));
+
+        return this;
+    }
+
     public ItemBuilder withLore(String... lore) {
         itemMeta.setLore(Arrays.asList(lore));
 
