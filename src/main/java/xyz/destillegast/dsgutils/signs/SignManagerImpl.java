@@ -129,6 +129,17 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
         updateSignByTitle(null);
     }
 
+    @Override
+    public void forceUpdateSignsForPlayer(Player player) {
+        for (Location signLocation : signLocations.keySet()) {
+            if (signLocation.getWorld() == null) continue;
+
+            String key = signLocations.get(signLocation);
+
+            updateSignForPlayer(player, signLocation, key);
+        }
+    }
+
     private void updateSignByTitle(String title) {
         for (Location signLocation : signLocations.keySet()) {
             if(signLocation.getWorld() == null) continue;
@@ -136,16 +147,22 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
             String key = signLocations.get(signLocation);
             if (title != null && key.equals(title) || title == null) {
                 for (Player player : signLocation.getWorld().getPlayers()) {
-                    if (signLocation.distanceSquared(player.getLocation()) <= signLocation.getWorld().getViewDistance() * 16 - 16) {
-                        Bukkit.getScheduler().runTask(main, () -> {
-                            actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
-                        });
-                    }
+                    updateSignForPlayer(player, signLocation, key);
                 }
             }
         }
     }
 
+    /**
+     * Updates all signs that are in range of the player.
+     */
+    private void updateSignForPlayer(Player player, Location signLocation, String key) {
+        if (signLocation.distanceSquared(player.getLocation()) <= signLocation.getWorld().getViewDistance() * 16 - 16) {
+            Bukkit.getScheduler().runTask(main, () -> {
+                actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
+            });
+        }
+    }
 
     @Override
     public void run() {
