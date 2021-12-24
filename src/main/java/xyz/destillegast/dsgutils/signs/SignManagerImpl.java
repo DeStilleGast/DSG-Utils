@@ -157,7 +157,9 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
      * Updates all signs that are in range of the player.
      */
     private void updateSignForPlayer(Player player, Location signLocation, String key) {
-        if (signLocation.distanceSquared(player.getLocation()) <= signLocation.getWorld().getViewDistance() * 16 - 16) {
+        if(signLocation.getWorld() != player.getWorld()) return;
+
+        if (signLocation.distance(player.getLocation()) <= signLocation.getWorld().getViewDistance() * 16 - 16) {
             Bukkit.getScheduler().runTask(main, () -> {
                 actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
             });
