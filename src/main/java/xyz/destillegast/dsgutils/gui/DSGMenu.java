@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import xyz.destillegast.dsgutils.DSGUtils;
 import xyz.destillegast.dsgutils.gui.item.ActionItem;
 import xyz.destillegast.dsgutils.gui.item.GuiItem;
 import xyz.destillegast.dsgutils.gui.item.GuiItemEvent;
@@ -104,7 +105,17 @@ public class DSGMenu implements InventoryHolder {
 
         if (inUseItemList.containsKey(e.getSlot())) {
             GuiItem item = inUseItemList.get(e.getSlot());
-            item.run(new GuiItemEvent(item, e));
+            try {
+                item.run(new GuiItemEvent(item, e));
+            } catch (Exception ex){
+                ex.printStackTrace();
+
+                DSGUtils.getPlugin(DSGUtils.class).logError("Inventory crashed and closed [" + this.getTitle() + "]");
+                e.setCancelled(true);
+                this.close();
+
+                return;
+            }
 
             inventory.setItem(e.getSlot(), item.getItem());
         }
@@ -238,5 +249,10 @@ public class DSGMenu implements InventoryHolder {
 
     public void setHelpText(String... text) {
         this.helpText = text;
+
+        if(isOpen){
+            final int slot = getSize() - 2;
+            setItem(slot, new ActionItem(new ItemBuilder(Material.KNOWLEDGE_BOOK).withName(ChatColor.GREEN + "Help").withLore(helpText).build()));
+        }
     }
 }

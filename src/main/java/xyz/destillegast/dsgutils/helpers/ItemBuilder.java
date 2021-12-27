@@ -43,8 +43,17 @@ public class ItemBuilder {
         return this;
     }
 
+
     public ItemBuilder withLore(String lore) {
-        withLore(lore.split("\n"));
+        return withLore(lore, false);
+    }
+
+    public ItemBuilder withLore(String lore, boolean resetColor) {
+        if(resetColor) {
+            withLore(Arrays.stream(lore.split("\n")).map(line -> ChatColor.RESET + "" + ChatColor.WHITE + line).toList(), resetColor);
+        }else{
+            withLore(Arrays.stream(lore.split("\n")).toList(), resetColor);
+        }
 
         return this;
     }
@@ -56,6 +65,16 @@ public class ItemBuilder {
     }
 
     public ItemBuilder withLore(List<String> lore) {
+        return withLore(lore, false);
+    }
+
+    public ItemBuilder withLore(List<String> lore, boolean resetColor) {
+        if(resetColor) {
+            for (int i = 0; i < lore.size(); i++) {
+                lore.set(i, ChatColor.RESET + "" + ChatColor.WHITE + lore.get(i));
+            }
+        }
+
         itemMeta.setLore(lore);
 
         return this;
