@@ -37,7 +37,7 @@ public class BossBarTimerImpl implements Runnable, BossBarTimer {
                 message.replace("%time%", formatTime(this.duration)),
                 bossBarColor,
                 bossBarStyle,
-                BarFlag.DARKEN_SKY
+                BarFlag.PLAY_BOSS_MUSIC
         );
 
         this.bossBar.setProgress(1);
