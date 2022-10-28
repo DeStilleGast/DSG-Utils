@@ -14,3 +14,9 @@ commands:
     permission: "dsg.util.test.gui.command"
   dsg-test-bungee:
     permission: "dsg.util.test.bungeeapi.command"
+  dsg-test-bossbar-timer:
+    permission: "dsg.util.test.bossbartimer.command"
+
+
+libraries:
+  - org.spongepowered:configurate-yaml:4.1.2

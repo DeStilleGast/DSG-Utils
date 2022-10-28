@@ -17,6 +17,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>happymine-repository-releases</id>
+            <url>https://repo.happymine.nl/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>happymine-repository-snapshots</id>
+            <url>https://repo.happymine.nl/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -40,6 +51,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
                         </configuration>
                     </execution>
                 </executions>
@@ -68,10 +80,16 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.17-R0.1-SNAPSHOT</version>
+            <version>1.19.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <!-- Modify this line to target the loader you wish to use. -->
+            <artifactId>configurate-yaml</artifactId>
+            <version>4.1.2</version>
+        </dependency>
 
     </dependencies>
 </project>

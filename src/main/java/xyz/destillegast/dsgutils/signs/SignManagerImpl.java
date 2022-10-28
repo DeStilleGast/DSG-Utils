@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.ServicePriority;
 import xyz.destillegast.dsgutils.DSGUtils;
 import xyz.destillegast.dsgutils.api.SignManager;
+import xyz.destillegast.dsgutils.internalconfig.SignManagerSettings;
+import xyz.destillegast.dsgutils.internalutils.Reloadable;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +29,7 @@ import java.util.Map;
 /**
  * Created by DeStilleGast 15-7-2021
  */
-public class SignManagerImpl implements Listener, Runnable, SignManager {
+public class SignManagerImpl implements Listener, Runnable, SignManager, Reloadable {
 
     private final Map<String, SignActions> actionHandlers = new HashMap<>();
     private final Map<Location, String> signLocations = new LinkedHashMap<>();
@@ -39,7 +41,7 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
         Bukkit.getServicesManager().register(SignManager.class, this, main, ServicePriority.Normal);
 
         Bukkit.getPluginManager().registerEvents(this, main);
-        Bukkit.getScheduler().runTaskTimer(main, this, 20 * 30, 20 * 30);
+        onReload();
 
         configFile = new File(main.getDataFolder(), "SignManager.yml");
         if (!configFile.exists()) {
@@ -60,8 +62,17 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
         }
     }
 
+    private boolean isActionBlacklisted(String rawTitle){
+        return getConfig().blacklistedHandlers.contains(rawTitle) || getConfig().blacklistedHandlers.contains(getAsHeader(rawTitle));
+    }
+
     @Override
     public void registerHandler(String title, SignActions signActions) {
+        if(isActionBlacklisted(title)){
+            main.logError(String.format("%s was NOT registered because it is blacklisted !", getAsHeader(title)));
+            return;
+        }
+
         actionHandlers.put(getAsHeader(title), signActions);
         main.logInfo(String.format("%s has been registered by %s", title, signActions.getClass()));
     }
@@ -141,6 +152,8 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
     }
 
     private void updateSignByTitle(String title) {
+        if(isActionBlacklisted(title)) return;
+
         for (Location signLocation : signLocations.keySet()) {
             if(signLocation.getWorld() == null) continue;
 
@@ -186,7 +199,7 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
         Bukkit.getScheduler().runTask(main, () -> {
             for (Location signLocation : signLocations.keySet()) {
                 if (signLocation.getWorld() == player.getWorld()) {
-                    if (signLocation.distance(player.getLocation()) < 64) {
+                    if (signLocation.distance(player.getLocation()) <= getConfig().nearbyDistance) {
                         String key = signLocations.get(signLocation);
 
                         actionHandlers.get(key).onSignUpdate(player, signLocation.getBlock());
@@ -217,5 +230,15 @@ public class SignManagerImpl implements Listener, Runnable, SignManager {
     private Location stringToLocation(String string) {
         String[] locParts = string.split(",");
         return new Location(Bukkit.getWorld(locParts[0]), Integer.parseInt(locParts[1]), Integer.parseInt(locParts[2]), Integer.parseInt(locParts[3]));
+    }
+
+    @Override
+    public void onReload() {
+        long refreshTimer = getConfig().refreshTimer * 20;
+        Bukkit.getScheduler().runTaskTimer(main, this, refreshTimer, refreshTimer);
+    }
+
+    private SignManagerSettings getConfig(){
+        return main.getInternalConfig().signManagerSettings;
     }
 }

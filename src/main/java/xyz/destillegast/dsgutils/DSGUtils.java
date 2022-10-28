@@ -5,23 +5,43 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.spongepowered.configurate.ConfigurateException;
+//import xyz.destillegast.dsgutils.bossbartimer.BossBarTimerManagerImpl;
+//import xyz.destillegast.dsgutils.commands.TestBossBarTimerCommand;
 import xyz.destillegast.dsgutils.commands.TestBungeeAPICommand;
 import xyz.destillegast.dsgutils.commands.TestGuiCommand;
 import xyz.destillegast.dsgutils.helpers.Tuple;
+import xyz.destillegast.dsgutils.internalconfig.UtilConfig;
+import xyz.destillegast.dsgutils.internalutils.ConfigurateLoaderImpl;
+import xyz.destillegast.dsgutils.internalutils.ConfigurateWrapper;
 import xyz.destillegast.dsgutils.listener.InventoryMenuListener;
 import xyz.destillegast.dsgutils.api.SignManager;
+//import xyz.destillegast.dsgutils.pvpmanager.PvpManagerImpl;
 import xyz.destillegast.dsgutils.signs.SignManagerImpl;
 import xyz.destillegast.dsgutils.signs.TestSign;
 
+import java.io.File;
 import java.util.logging.Level;
 
 public final class DSGUtils extends JavaPlugin implements CommandExecutor {
+
+    private UtilConfig utilConfig;
+    private ConfigurateWrapper<UtilConfig> configWrapper;
 
     private SignManagerImpl signManager;
 
     @Override
     public void onEnable() {
         if(!getDataFolder().exists()) getDataFolder().mkdir();
+
+        try {
+            configWrapper = new ConfigurateLoaderImpl<UtilConfig>().createWrapper((new File(getDataFolder(), "config.yml").toPath()), UtilConfig.class);
+
+            reloadInternalConfig();
+        } catch (ConfigurateException e) {
+            throw new RuntimeException(e);
+        }
+
 
         final PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new InventoryMenuListener(), this);
@@ -31,6 +51,7 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
         getCommand("dsg-random-test-command").setExecutor(this);
         getCommand("dsg-test-gui").setExecutor(new TestGuiCommand());
         getCommand("dsg-test-bungee").setExecutor(new TestBungeeAPICommand(this));
+//        getCommand("dsg-test-bossbar-timer").setExecutor(new TestBossBarTimerCommand());
 
 //        BaseAnimation ba = new ScrollTextAnimation("Text", ChatColor.AQUA.asBungee().getColor());
 //        getServer().getScheduler().runTaskTimer(this, () -> {
@@ -45,6 +66,11 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
 
         ConfigurationSerialization.registerClass(Tuple.class);
         new TestSign(this);
+
+//        new BossBarTimerManagerImpl(this);
+
+
+//        getServer().getPluginManager().registerEvents(new PvpManagerImpl(), this);
     }
 
     @Override
@@ -89,5 +115,13 @@ public final class DSGUtils extends JavaPlugin implements CommandExecutor {
 
     public void logInfo(String s) {
         getLogger().info(s);
+    }
+
+    public UtilConfig getInternalConfig(){
+        return this.utilConfig;
+    }
+
+    protected void reloadInternalConfig() throws ConfigurateException{
+        this.utilConfig = this.configWrapper.load();
     }
 }
