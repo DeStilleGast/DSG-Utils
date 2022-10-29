@@ -12,6 +12,7 @@ import xyz.destillegast.dsgutils.api.BossBarTimer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BossBarTimerImpl implements Runnable, BossBarTimer {
@@ -28,7 +29,7 @@ public class BossBarTimerImpl implements Runnable, BossBarTimer {
     private final BukkitTask bukkitTask;
 
 
-    BossBarTimerImpl(@Nonnull DSGUtils mainPlugin, @Nonnull Player player, @Nonnull String message, long duration, @Nonnull TimeUnit timeUnit, @Nonnull BarColor bossBarColor, @Nonnull BarStyle bossBarStyle, @Nullable Runnable finishAction){
+    BossBarTimerImpl(@Nonnull DSGUtils mainPlugin, @Nonnull List<Player> players, @Nonnull String message, long duration, @Nonnull TimeUnit timeUnit, @Nonnull BarColor bossBarColor, @Nonnull BarStyle bossBarStyle, @Nullable Runnable finishAction){
         this.message = message;
         this.finishAction = finishAction;
         this.duration = timeUnit.toMillis(duration);
@@ -41,7 +42,7 @@ public class BossBarTimerImpl implements Runnable, BossBarTimer {
         );
 
         this.bossBar.setProgress(1);
-        this.bossBar.addPlayer(player);
+        players.forEach(this.bossBar::addPlayer);
 
         bukkitTask = Bukkit.getScheduler().runTaskTimer(mainPlugin, this, 10L, 1L);
     }

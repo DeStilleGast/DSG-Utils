@@ -11,6 +11,8 @@ import xyz.destillegast.dsgutils.api.BossBarTimerManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +40,11 @@ public class BossBarTimerManagerImpl implements BossBarTimerManager {
      */
     @Override
     public BossBarTimer createBossBarTimer(@Nonnull Player player, @Nonnull String message, long duration, @Nonnull TimeUnit timeUnit, @Nullable Runnable finishAction){
-        return this.createBossBarTimer(player, message, duration, timeUnit, randomBarColor() , randomBarStyle(), finishAction);
+        return this.createBossBarTimer(Collections.singletonList(player), message, duration, timeUnit, randomBarColor() , randomBarStyle(), finishAction);
+    }
+    @Override
+    public BossBarTimer createBossBarTimer(@Nonnull List<Player> players, @Nonnull String message, long duration, @Nonnull TimeUnit timeUnit, @Nullable Runnable finishAction){
+        return this.createBossBarTimer(players, message, duration, timeUnit, randomBarColor() , randomBarStyle(), finishAction);
     }
 
     /**
@@ -56,7 +62,11 @@ public class BossBarTimerManagerImpl implements BossBarTimerManager {
      */
     @Override
     public BossBarTimer createBossBarTimer(@Nonnull Player player, @Nonnull String message, long duration, @Nonnull TimeUnit timeUnit, @Nonnull BarColor bossBarColor, @Nonnull BarStyle bossBarStyle, @Nullable Runnable finishAction){
-        return new BossBarTimerImpl(pluginHolder, player, message, duration, timeUnit, bossBarColor, bossBarStyle, finishAction);
+        return createBossBarTimer(Collections.singletonList(player), message, duration, timeUnit, bossBarColor, bossBarStyle, finishAction);
+    }
+
+    public BossBarTimer createBossBarTimer(@Nonnull List<Player> players, @Nonnull String message, long duration, @Nonnull TimeUnit timeUnit, @Nonnull BarColor bossBarColor, @Nonnull BarStyle bossBarStyle, @Nullable Runnable finishAction){
+        return new BossBarTimerImpl(pluginHolder, players, message, duration, timeUnit, bossBarColor, bossBarStyle, finishAction);
     }
 
     @Override
